@@ -36,9 +36,12 @@ class ViewController: UIViewController,WKNavigationDelegate {
         let refreshBtn = UIBarButtonItem(barButtonSystemItem: .refresh, target: webView, action:#selector(webView.reload))
         
         let spacing = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbarItems = [progressBarBtn,spacing,refreshBtn]
+        let backBtn = UIBarButtonItem(title: "back", style: .plain, target: webView, action:#selector (webView.goBack))
+        let forwardBtn = UIBarButtonItem(title: "forward", style: .plain, target: webView, action: #selector(webView.goForward))
+        toolbarItems = [progressBarBtn,spacing,backBtn,forwardBtn,refreshBtn]
         navigationController?.isToolbarHidden = false
         
+
         //we need to add observer to the progress of loading webview , as when the progress changes the progress bar changes we will do this bye KVO (key value observer)
         webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
         //keypath : represent the value we want to observe
