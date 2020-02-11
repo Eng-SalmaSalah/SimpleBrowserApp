@@ -7,12 +7,27 @@
 //
 
 import UIKit
+import WebKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController,WKNavigationDelegate {
+    
+    var webView : WKWebView?
+    
+    override func loadView() {
+        webView = WKWebView()
+        webView?.navigationDelegate = self
+        view = webView // to add the webview to the view of my vc
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        //to load website in the webview , string is wrapped in url , url is wrapped in url request and the web view load the url request
+    
+        let url = URL(string: "https://www.hackingwithswift.com")!//we force unwarp the url because i have written it no string interpolation , otherwise we can use guard let
+        let urlRequest = URLRequest(url: url)
+        webView?.load(urlRequest)
+        
+        webView?.allowsBackForwardNavigationGestures = true // to allow back and forward using sliding
     }
 
 
