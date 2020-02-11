@@ -13,6 +13,7 @@ class ViewController: UIViewController,WKNavigationDelegate {
     
     var webView : WKWebView!
     var progressView : UIProgressView!
+    var webSites = ["hackingwithswift.com","apple.com"] //that is better to use this list to show to user and to check that user opened one of the allowe websites
     
     override func loadView() {
         webView = WKWebView()
@@ -44,7 +45,7 @@ class ViewController: UIViewController,WKNavigationDelegate {
         //options : what notification (observeing) is on (here it happens when new value is set)
         //context : if we need to send extra info with the notification , it is nil almost all time
     
-        let url = URL(string: "https://www.hackingwithswift.com")!//we force unwarp the url because i have written it no string interpolation , otherwise we can use guard let
+        let url = URL(string: "https://" + webSites[0])!//we force unwarp the url because i have written it no string interpolation , otherwise we can use guard let
         let urlRequest = URLRequest(url: url)
         webView.load(urlRequest)
         
@@ -54,8 +55,11 @@ class ViewController: UIViewController,WKNavigationDelegate {
     
     @objc func openPage() {
         let alertVC = UIAlertController(title: "Select Page", message: nil, preferredStyle: .actionSheet)
-        alertVC.addAction(UIAlertAction(title: "hackingwithswift.com", style: .default, handler: openSelectedPage))
-        alertVC.addAction(UIAlertAction(title: "apple.com", style: .default, handler: openSelectedPage))
+//        alertVC.addAction(UIAlertAction(title: "hackingwithswift.com", style: .default, handler: openSelectedPage))
+//        alertVC.addAction(UIAlertAction(title: "apple.com", style: .default, handler: openSelectedPage))
+        for webSite in webSites{
+            alertVC.addAction(UIAlertAction(title: webSite, style: .default, handler: openSelectedPage))
+        }
         alertVC.addAction(UIAlertAction(title: "cancel", style: .cancel)) //to dismiss alert when cancel tapped,we don't add handler
         alertVC.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         present(alertVC,animated: true)
@@ -74,6 +78,25 @@ class ViewController: UIViewController,WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         title = webView.title //to set the title of vc with the website name
     }
+    
+    
+    
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        let url = navigationAction.request.url
+
+        if let host = url?.host {
+            for website in webSites {
+                if host.contains(website) {
+                    decisionHandler(.allow)
+                    return
+                }
+            }
+        }
+
+        decisionHandler(.cancel)
+    }
+    
+    
     
     //method that is called when value changes
   
