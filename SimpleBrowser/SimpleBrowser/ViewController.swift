@@ -14,6 +14,7 @@ class ViewController: UIViewController,WKNavigationDelegate {
     var webView : WKWebView!
     var progressView : UIProgressView!
     var webSites = ["hackingwithswift.com","apple.com"] //that is better to use this list to show to user and to check that user opened one of the allowe websites
+    var webSiteToLoad : String?
     
     override func loadView() {
         webView = WKWebView()
@@ -48,7 +49,11 @@ class ViewController: UIViewController,WKNavigationDelegate {
         //options : what notification (observeing) is on (here it happens when new value is set)
         //context : if we need to send extra info with the notification , it is nil almost all time
     
-        let url = URL(string: "https://" + webSites[0])!//we force unwarp the url because i have written it no string interpolation , otherwise we can use guard let
+        var url = URL(string: "https://" + webSites[0])!
+        //to open the selected website in the table view if the user selected one from the tablevc:
+        if let selectedWebSite = webSiteToLoad{
+            url = URL(string: "https://" + selectedWebSite)!
+        }
         let urlRequest = URLRequest(url: url)
         webView.load(urlRequest)
         
@@ -97,9 +102,27 @@ class ViewController: UIViewController,WKNavigationDelegate {
         }
 
         decisionHandler(.cancel)
+        // to let user know :
+        showAlertIfWebsiteNotAllowed(blockedWebsite: url?.host ?? "")
+        
     }
     
+    func showAlertIfWebsiteNotAllowed(blockedWebsite : String){
+        var alertMsg = ""
+        if blockedWebsite != ""{
+            alertMsg = "\(blockedWebsite) is blocked"
+        }else{
+            alertMsg = "this website is blocked"
+        }
+        
+        let alertVC = UIAlertController(title: "We are sorry", message: alertMsg, preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "ok", style: .default, handler:dismissViewIfWebsiteBlocked))
+        present(alertVC,animated: true)
+    }
     
+    func dismissViewIfWebsiteBlocked(alertAction : UIAlertAction){
+        navigationController?.popViewController(animated: true)
+    }
     
     //method that is called when value changes
   
